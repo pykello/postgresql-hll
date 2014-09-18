@@ -3391,6 +3391,9 @@ hll_pack_cardinality(PG_FUNCTION_ARGS)
         }
         else
         {
+            Datum result;
+            double result_d;
+
             csz = multiset_packed_size(msap);
             cb = (bytea *) palloc(VARHDRSZ + csz);
             SET_VARSIZE(cb, VARHDRSZ + csz);
@@ -3403,9 +3406,10 @@ hll_pack_cardinality(PG_FUNCTION_ARGS)
             // Furthermore, sometimes final functions are called multiple
             // times so deallocating it the first time leads to badness.
 
-            PG_RETURN_DATUM(
-                DirectFunctionCall1(hll_cardinality, PointerGetDatum(cb))
-            );
+            result = DirectFunctionCall1(hll_cardinality, PointerGetDatum(cb));
+            result_d = DatumGetFloat8(result);
+
+            PG_RETURN_FLOAT8(result_d);
         }
     }
 }

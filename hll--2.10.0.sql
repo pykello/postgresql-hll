@@ -440,8 +440,8 @@ CREATE FUNCTION hll_pack(internal)
      LANGUAGE C;
 
 CREATE FUNCTION hll_pack_cardinality(internal)
-     RETURNS hll
-     AS 'MODULE_PATHNAME'
+     RETURNS double precision
+     AS '$libdir/hll'
      LANGUAGE C;
 
 -- Computes cardinality of internal data structure.
