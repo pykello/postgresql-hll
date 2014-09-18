@@ -439,6 +439,11 @@ CREATE FUNCTION hll_pack(internal)
      AS 'MODULE_PATHNAME'
      LANGUAGE C;
 
+CREATE FUNCTION hll_pack_cardinality(internal)
+     RETURNS hll
+     AS 'MODULE_PATHNAME'
+     LANGUAGE C;
+
 -- Computes cardinality of internal data structure.
 --
 CREATE FUNCTION hll_card_unpacked(internal)

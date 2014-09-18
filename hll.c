@@ -3356,3 +3356,56 @@ hll_send(PG_FUNCTION_ARGS)
     pq_sendbytes(&buf, VARDATA(bp), VARSIZE(bp) - VARHDRSZ);
     PG_RETURN_BYTEA_P(pq_endtypsend(&buf));
 }
+
+PG_FUNCTION_INFO_V1(hll_pack_cardinality);
+Datum hll_pack_cardinality(PG_FUNCTION_ARGS);
+Datum
+hll_pack_cardinality(PG_FUNCTION_ARGS)
+{
+    MemoryContext aggctx;
+
+    bytea * cb;
+    size_t csz;
+
+    multiset_t * msap;
+
+    // We must be called as a transition routine or we fail.
+    if (!AggCheckCallContext(fcinfo, &aggctx))
+        ereport(ERROR,
+                (errcode(ERRCODE_DATA_EXCEPTION),
+                 errmsg("hll_pack outside aggregate context")));
+
+    // Is the first argument a NULL?
+    if (PG_ARGISNULL(0))
+    {
+        PG_RETURN_NULL();
+    }
+    else
+    {
+        msap = (multiset_t *) PG_GETARG_POINTER(0);
+
+        // Was the aggregation uninitialized?
+        if (msap->ms_type == MST_UNINIT)
+        {
+            PG_RETURN_NULL();
+        }
+        else
+        {
+            csz = multiset_packed_size(msap);
+            cb = (bytea *) palloc(VARHDRSZ + csz);
+            SET_VARSIZE(cb, VARHDRSZ + csz);
+
+            multiset_pack(msap, (uint8_t *) VARDATA(cb), csz);
+
+            // We don't need to pfree the msap memory because it is zone
+            // allocated inside postgres.
+            //
+            // Furthermore, sometimes final functions are called multiple
+            // times so deallocating it the first time leads to badness.
+
+            PG_RETURN_DATUM(
+                DirectFunctionCall1(hll_cardinality, PointerGetDatum(cb))
+            );
+        }
+    }
+}
