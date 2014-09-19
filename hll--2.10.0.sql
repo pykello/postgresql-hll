@@ -510,3 +510,20 @@ CREATE AGGREGATE hll_add_agg (hll_hashval, integer, integer, bigint, integer) (
        STYPE = internal,
        FINALFUNC = hll_pack
 );
+
+CREATE TYPE conversion_type_detail AS (
+    model_id                        bigint,
+    conversion_type                 varchar(10),
+    duplicate                       boolean,
+    action_count                    bigint,
+    action_uu_count                 hll(12,5,8,0),
+    revenue                         bigint
+);
+
+CREATE OR REPLACE FUNCTION sum_conv_action_count(conv_data conversion_type_detail[],
+                                                 goal_types varchar(10)[]) RETURNS bigint AS
+'$libdir/hll' LANGUAGE C;
+
+CREATE OR REPLACE FUNCTION union_conv_action_count(conv_data conversion_type_detail[],
+                                                   goal_types varchar(10)[]) RETURNS bigint AS
+'$libdir/hll' LANGUAGE C;
