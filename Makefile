@@ -25,7 +25,7 @@ DATA =		\
 
 EXTRA_CLEAN += -r $(RPM_BUILD_ROOT)
 
-PG_CPPFLAGS += -fPIC
+PG_CPPFLAGS += -fPIC -march=native -O3
 hll.o: override CFLAGS += -std=c99
 MurmurHash3.o: override CC = $(CXX)
 
