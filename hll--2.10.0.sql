@@ -511,6 +511,7 @@ CREATE AGGREGATE hll_add_agg (hll_hashval, integer, integer, bigint, integer) (
        FINALFUNC = hll_pack
 );
 
+-- Custom functions for Neustar which need to refer to HLL type in C and SQL
 CREATE TYPE conversion_type_detail AS (
     model_id                        bigint,
     conversion_type                 varchar(10),

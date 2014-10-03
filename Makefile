@@ -16,6 +16,7 @@ MODULE_big = hll
 OBJS =		\
 			hll.o \
 			MurmurHash3.o \
+			conv_action_functions.o \
 			$(NULL)
 
 EXTENSION = hll
