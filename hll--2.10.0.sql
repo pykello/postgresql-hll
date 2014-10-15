@@ -523,8 +523,8 @@ CREATE TYPE conversion_type_detail AS (
 
 CREATE OR REPLACE FUNCTION sum_conv_action_count(conv_data conversion_type_detail[],
                                                  goal_types varchar(10)[]) RETURNS bigint AS
-'$libdir/hll' LANGUAGE C;
+'MODULE_PATHNAME' LANGUAGE C IMMUTABLE;
 
 CREATE OR REPLACE FUNCTION union_conv_action_count(conv_data conversion_type_detail[],
                                                    goal_types varchar(10)[]) RETURNS hll AS
-'$libdir/hll' LANGUAGE C;
+'MODULE_PATHNAME' LANGUAGE C IMMUTABLE;
